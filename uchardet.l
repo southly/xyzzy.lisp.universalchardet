@@ -1,0 +1,33 @@
+(require "wip/winapi")
+(in-package "winapi")
+
+(export '(*uchardet-dll-path*))
+
+(defvar *uchardet-dll-path* nil)
+(unless *uchardet-dll-path*
+  (setq *uchardet-dll-path* (merge-pathnames "uchardet.dll" (si:system-root))))
+
+(*define-dll-entry int chardet-create ((void* *))
+                   *uchardet-dll-path* "chardet_create")
+(*define-dll-entry void chardet-destroy (void*)
+                   *uchardet-dll-path* "chardet_destroy")
+(*define-dll-entry int chardet-handle-data (void* (char *) u_int)
+                   *uchardet-dll-path* "chardet_handle_data")
+(*define-dll-entry int chardet-data-end (void*)
+                   *uchardet-dll-path* "chardet_data_end")
+(*define-dll-entry int chardet-reset (void*)
+                   *uchardet-dll-path* "chardet_reset")
+(*define-dll-entry int chardet-get-charset (void* (char *) u_int)
+                   *uchardet-dll-path* "chardet_get_charset")
+
+;; (let ((det (si:make-chunk nil 4))
+;;       (enc (si:make-chunk 'string 32))
+;;       (str (si:make-string-chunk "‚ ‚¢‚¤‚¦‚¨"))
+;;       (p nil))
+;;   (winapi::chardet-create det)
+;;   (setq p (si:unpack-uint32 det 0))
+;;   (winapi::chardet-handle-data p str (1- (si:chunk-size str)))
+;;   (winapi::chardet-data-end p)
+;;   (winapi::chardet-get-charset p enc 32)
+;;   (winapi::chardet-destroy p)
+;;   (si:unpack-string enc 0 32))
