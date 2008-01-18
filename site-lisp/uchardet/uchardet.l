@@ -1,11 +1,9 @@
-(require "wip/winapi")
-(in-package "winapi")
+(provide "uchardet/uchardet")
 
-(export '(*uchardet-dll-path*))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (require "uchardet/defs"))
 
-(defvar *uchardet-dll-path* nil)
-(unless *uchardet-dll-path*
-  (setq *uchardet-dll-path* (merge-pathnames "uchardet.dll" (si:system-root))))
+(in-package "uchardet")
 
 (*define-dll-entry int chardet-create ((void* *))
                    *uchardet-dll-path* "chardet_create")
@@ -19,6 +17,21 @@
                    *uchardet-dll-path* "chardet_reset")
 (*define-dll-entry int chardet-get-charset (void* (char *) u_int)
                    *uchardet-dll-path* "chardet_get_charset")
+
+(export '(detect-encoding-from-string))
+
+(defun detect-encoding-from-string (str)
+  (let ((ptr (si:make-chunk nil 4))
+        (enc (si:make-chunk :string 32))
+        (str-chunk (si:make-string-chunk str))
+        (det nil))
+    (chardet-create ptr)
+    (setq det (si:unpack-uint32 ptr 0))
+    (chardet-handle-data det str-chunk (1- (si:chunk-size str-chunk)))
+    (chardet-data-end det)
+    (chardet-get-charset det enc 32)
+    (chardet-destroy det)
+    (si:unpack-string enc 0 32)))
 
 ;; (let ((det (si:make-chunk nil 4))
 ;;       (enc (si:make-chunk 'string 32))
