@@ -42,10 +42,10 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require "uchardet/defs"))
 
-(in-package "editor")
-
-(import '(point-min point-max buffer-substring) "uchardet")
-(import '(*encoding-auto* *encoding-sjis* *encoding-euc-jp* *encoding-utf8*) "uchardet")
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (in-package "editor")
+  (import '(point-min point-max buffer-substring) "uchardet")
+  (import '(*encoding-auto* *encoding-sjis* *encoding-euc-jp* *encoding-jis* *encoding-utf8*) "uchardet"))
 
 (in-package "uchardet")
 
