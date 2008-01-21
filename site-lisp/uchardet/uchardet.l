@@ -18,7 +18,7 @@
 (*define-dll-entry int chardet-get-charset (void* (char *) u_int)
                    *uchardet-dll-path* "chardet_get_charset")
 
-(export '(detect-encoding-from-string))
+(export '(detect-encoding-from-string detect-encoding))
 
 (defun detect-encoding-from-string (str)
   (let ((ptr (si:make-chunk nil 4))
@@ -32,6 +32,19 @@
     (chardet-get-charset det enc 32)
     (chardet-destroy det)
     (si:unpack-string enc 0 32)))
+
+(defun detect-encoding ()
+  (when (= (ed::point-min) (ed::point-max))
+    (return-from 'detect-encoding *encoding-auto*))
+  (let ((enc (cdr (assoc (detect-encoding-from-string (ed::buffer-substring (ed::point-min) (ed::point-max)))
+                         `(("SHIFT_JIS" . ,ed::*encoding-sjis*)
+                           ("EUC-JP"    . ,ed::*encoding-euc-jp*)
+                           ("ISO-2022-JP" . ,ed::*encoding-jis*)
+                           ("UTF-8"     . ,ed::*encoding-utf8*))
+                         :test #'string=))))
+    (or enc ed::*encoding-auto*)))
+
+;; (setq *auto-encoding-alist*  '((".*" . uchardet:detect-encoding)))
 
 ;; (let ((det (si:make-chunk nil 4))
 ;;       (enc (si:make-chunk 'string 32))
