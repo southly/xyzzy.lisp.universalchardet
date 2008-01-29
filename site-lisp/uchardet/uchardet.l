@@ -121,3 +121,26 @@
     (or enc *encoding-auto*)))
 
 (setq ed::*auto-encoding-alist*  '((".*" . detect-encoding)))
+
+(in-package "editor")
+
+; from $XYZZY/lisp/files.l
+(defun find-file-auto-encoding (filename)
+  (unwind-protect
+      (let ((encoding
+             (let ((*expected-fileio-encoding* *encoding-binary*)) ; +
+               (declare (special *expected-fileio-encoding*)) ; +
+               (ignore-errors (insert-file-contents filename t nil 4096))
+               (goto-char (point-min))
+               (dolist (x *auto-encoding-alist* nil)
+                 (when (string-matchp (car x) filename)
+                   (return (funcall (cdr x))))))))
+        (when (stringp encoding)
+          (setq encoding (gethash encoding
+                                  *mime-charset-name-hash-table*)))
+        (if (char-encoding-p encoding)
+            encoding
+          (gethash (cdr (assoc "encoding" (find-file-scan-params)
+                               :test #'string-equal))
+                   *mime-charset-name-hash-table*)))
+    (erase-buffer (selected-buffer))))
