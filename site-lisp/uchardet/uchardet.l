@@ -45,7 +45,10 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (in-package "editor")
   (import '(point-min point-max buffer-substring) "uchardet")
-  (import '(*encoding-auto* *encoding-sjis* *encoding-euc-jp* *encoding-jis* *encoding-utf8*) "uchardet"))
+  (import '(*encoding-auto* *encoding-sjis* *encoding-euc-jp* *encoding-jis* *encoding-utf8* *encoding-utf8n*
+            *encoding-windows-cyrillic* *encoding-windows-latin1* *encoding-windows-greek* *encoding-iso-8859-5*
+            *encoding-iso-8859-7* *encoding-big5* *encoding-iso-2022-cn* *encoding-iso-2022-kr* *encoding-euc-kr*)
+          "uchardet"))
 
 (in-package "uchardet")
 
