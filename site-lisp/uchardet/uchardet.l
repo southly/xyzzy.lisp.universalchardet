@@ -96,6 +96,20 @@
 
 (export '(detect-encoding-from-string detect-encoding))
 
+(defvar *chardet-encoding-list* `(("SHIFT_JIS" . ,*encoding-sjis*)
+                                  ("EUC-JP"    . ,*encoding-euc-jp*)
+                                  ("ISO-2022-JP" . ,*encoding-jis*)
+                                  ("UTF-8"     . ,*encoding-utf8n*)
+                                  ("WINDOWS-1251" . ,*encoding-windows-cyrillic*)
+                                  ("WINDOWS-1252" . ,*encoding-windows-latin1*)
+                                  ("WINDOWS-1253" . ,*encoding-windows-greek*)
+                                  ("ISO-8859-5" . ,*encoding-iso-8859-5*)
+                                  ("ISO-8859-7" . ,*encoding-iso-8859-7*)
+                                  ("BIG5" . ,*encoding-big5*)
+                                  ("ISO-2022-CN" . ,*encoding-iso-2022-cn*)
+                                  ("ISO-2022-KR" . ,*encoding-iso-2022-kr*)
+                                  ("EUC-KR" . ,*encoding-euc-kr*)))
+
 (defun detect-encoding-from-string (str)
   (let ((ptr (si:make-chunk nil 4))
         (enc (si:make-chunk :string 32))
@@ -113,10 +127,7 @@
   (when (= (point-min) (point-max))
     (return-from detect-encoding *encoding-auto*))
   (let ((enc (cdr (assoc (detect-encoding-from-string (buffer-substring (point-min) (point-max)))
-                         `(("SHIFT_JIS" . ,*encoding-sjis*)
-                           ("EUC-JP"    . ,*encoding-euc-jp*)
-                           ("ISO-2022-JP" . ,*encoding-jis*)
-                           ("UTF-8"     . ,*encoding-utf8*))
+                         *chardet-encoding-list*
                          :test #'string=))))
     (or enc *encoding-auto*)))
 
@@ -124,6 +135,7 @@
 
 (in-package "editor")
 
+;; $XYZZy/lisp/files.l
 (defun find-file-auto-encoding (filename)
   (let ((b (buffer-fileio-encoding)))
     (unwind-protect
