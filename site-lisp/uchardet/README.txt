@@ -13,8 +13,9 @@ uchardet.dll（「universalchardet」のCライブラリ）を xyzzy から利用します。
  のトリプルライセンスとします。
 
 * 更新履歴
+ - 2008-02-03 : 認識するエンコーディングを増やしてみた
  - 2008-01-29 : insert-file-contents でのエンコーディングの自動認識を抑
-                止するために、ed::find-file-auto-encoding を再定義。
+                止するために、ed::find-file-auto-encoding を再定義
  - 2008-01-21 : 初版
 
 * 参考
